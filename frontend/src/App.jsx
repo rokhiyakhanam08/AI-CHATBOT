@@ -1,215 +1,394 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
+import WelcomeScreen from "./components/WelcomeScreen";
+import ChatMessage from "./components/ChatMessage";
+import TypingIndicator from "./components/TypingIndicator";
+import Composer from "./components/Composer";
+import ErrorBanner from "./components/ErrorBanner";
+import { ArrowDownIcon } from "./components/Icons";
 import "./App.css";
 
-function App() {
+const API_URL = "http://127.0.0.1:8000/chat";
+const STORAGE_KEY = "viro_ai_conversations";
+
+export default function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [lastPrompt, setLastPrompt] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth > 820;
+    }
+    return true;
+  });
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
 
+  // Conversations history stored in localStorage
+  const [conversations, setConversations] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const scrollContainerRef = useRef(null);
   const bottomRef = useRef(null);
 
+  // Sync conversations to localStorage
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+    } catch (e) {
+      console.error("Failed to save conversations to localStorage:", e);
+    }
+  }, [conversations]);
 
-  const sendMessage = async () => {
-    const message = input.trim();
+  // Smooth auto-scroll to bottom on messages/loading changes
+  const scrollToBottom = useCallback((behavior = "smooth") => {
+    bottomRef.current?.scrollIntoView({ behavior });
+  }, []);
 
-    if (!message || loading) return;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading, scrollToBottom]);
+
+  // Track scroll position for "scroll to bottom" button
+  const handleScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollBottom(distanceToBottom > 160);
+  };
+
+  // Start fresh conversation
+  const startNewChat = useCallback(() => {
+    setMessages([]);
+    setConversationId(null);
+    setInput("");
+    setError("");
+    setLastPrompt("");
+  }, []);
+
+  // Keyboard shortcut for New Chat (Ctrl+N or Cmd+N)
+  useEffect(() => {
+    const handleGlobalKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        startNewChat();
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKey);
+    return () => window.removeEventListener("keydown", handleGlobalKey);
+  }, [startNewChat]);
+
+  // Update or insert conversation into history
+  const persistConversation = (id, newMessages, initialPrompt) => {
+    setConversations((prev) => {
+      const existingIndex = prev.findIndex((c) => c.id === id);
+      const title =
+        existingIndex >= 0
+          ? prev[existingIndex].title
+          : (initialPrompt || "New Conversation").slice(0, 38).trim() +
+            (initialPrompt && initialPrompt.length > 38 ? "..." : "");
+
+      const updated = {
+        id,
+        title: title || "New Conversation",
+        messages: newMessages,
+        updatedAt: Date.now(),
+      };
+
+      if (existingIndex >= 0) {
+        const next = [...prev];
+        next[existingIndex] = updated;
+        return next;
+      }
+      return [updated, ...prev];
+    });
+  };
+
+  // Send message to FastAPI backend
+  const sendMessage = async (overridePrompt = null) => {
+    const promptToSend = (overridePrompt ?? input).trim();
+    if (!promptToSend || loading) return;
 
     setInput("");
     setError("");
+    setLastPrompt(promptToSend);
 
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: message }
-    ]);
+    const userMessage = {
+      role: "user",
+      content: promptToSend,
+      timestamp: Date.now(),
+    };
 
+    const nextMessages = [...messages, userMessage];
+    setMessages(nextMessages);
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: message,
-          conversation_id: conversationId
-        })
+          message: promptToSend,
+          conversation_id: conversationId,
+        }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(
-          data.detail || "Something went wrong. Please try again."
-        );
+        let errorDetail = data.detail;
+        if (response.status === 429) {
+          errorDetail =
+            data.detail ||
+            "Viro AI has reached its usage limit for the moment. Please wait a brief moment while your quota resets, then try again.";
+        } else if (response.status === 503) {
+          errorDetail =
+            data.detail ||
+            "Viro AI neural services are temporarily unavailable. Please try again in a few moments.";
+        } else if (!errorDetail) {
+          errorDetail = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorDetail);
       }
 
-      setConversationId(data.conversation_id);
+      const activeConvId = data.conversation_id || conversationId;
+      setConversationId(activeConvId);
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.ai_response }
-      ]);
+      const assistantMessage = {
+        role: "assistant",
+        content: data.ai_response || "No response received.",
+        timestamp: Date.now(),
+      };
 
+      const finalMessages = [...nextMessages, assistantMessage];
+      setMessages(finalMessages);
+
+      if (activeConvId) {
+        persistConversation(activeConvId, finalMessages, promptToSend);
+      }
     } catch (err) {
-      setError(err.message || "Unable to connect to the server.");
-
+      console.error("Chat error:", err);
+      let userFriendlyMessage = err.message;
+      if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+        userFriendlyMessage =
+          "Cannot reach Viro AI backend. Please verify the FastAPI server is running on http://127.0.0.1:8000.";
+      }
+      setError(userFriendlyMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const newChat = () => {
-    setMessages([]);
-    setConversationId(null);
-    setInput("");
-    setError("");
-  };
+  // Regenerate last AI response
+  const handleRegenerate = async () => {
+    if (loading || messages.length === 0) return;
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+    // Find the last user message
+    let lastUserMsg = null;
+    let cutoffIndex = -1;
+
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "user") {
+        lastUserMsg = messages[i];
+        cutoffIndex = i;
+        break;
+      }
+    }
+
+    if (!lastUserMsg) return;
+
+    // Truncate messages to include up to that user message
+    const trimmedMessages = messages.slice(0, cutoffIndex + 1);
+    setMessages(trimmedMessages);
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: lastUserMsg.content,
+          conversation_id: conversationId,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || `Server returned error (${response.status}).`
+        );
+      }
+
+      const activeConvId = data.conversation_id || conversationId;
+      setConversationId(activeConvId);
+
+      const assistantMessage = {
+        role: "assistant",
+        content: data.ai_response,
+        timestamp: Date.now(),
+      };
+
+      const finalMessages = [...trimmedMessages, assistantMessage];
+      setMessages(finalMessages);
+
+      if (activeConvId) {
+        persistConversation(activeConvId, finalMessages, lastUserMsg.content);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to regenerate response.");
+    } finally {
+      setLoading(false);
     }
   };
 
+
+
+  // Load an existing conversation from history
+  const handleSelectConversation = (id) => {
+    const found = conversations.find((c) => c.id === id);
+    if (found) {
+      setConversationId(found.id);
+      setMessages(found.messages || []);
+      setError("");
+      setInput("");
+      // Auto-close sidebar on mobile
+      if (window.innerWidth <= 820) {
+        setSidebarOpen(false);
+      }
+    }
+  };
+
+  // Delete a single conversation from history
+  const handleDeleteConversation = (id) => {
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+    if (conversationId === id) {
+      startNewChat();
+    }
+  };
+
+  // Clear all saved conversations
+  const handleClearAllConversations = () => {
+    if (window.confirm("Clear all conversation history?")) {
+      setConversations([]);
+      startNewChat();
+    }
+  };
+
+  // Active chat title for topbar
+  const activeConversation = conversations.find((c) => c.id === conversationId);
+  const currentTitle = activeConversation ? activeConversation.title : "Viro AI";
+
   return (
-    <div className="app-container">
+    <div className="viro-app-layout">
+      {/* Background Starfield / Celestial Grid */}
+      <div className="celestial-background-layer" />
+      <div className="ambient-nebula-glow" />
 
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-icon">✦</div>
-          <h2>Viro AI</h2>
-        </div>
+      {/* Collapsible Futuristic Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen((prev) => !prev)}
+        conversations={conversations}
+        activeId={conversationId}
+        onSelectConversation={handleSelectConversation}
+        onNewChat={startNewChat}
+        onDeleteConversation={handleDeleteConversation}
+        onClearAll={handleClearAllConversations}
+      />
 
-        <button className="new-chat-btn" onClick={newChat}>
-          + New Chat
-        </button>
+      {/* Main Chat Workspace */}
+      <main className="viro-chat-workspace">
+        {/* Topbar */}
+        <Topbar
+          sidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+          currentTitle={currentTitle}
+          isLoading={loading}
+          onNewChat={startNewChat}
+          onClearMessages={startNewChat}
+          hasMessages={messages.length > 0}
+        />
 
-        <div className="sidebar-info">
-          <p>Your Intelligent AI Companion</p>
-          <span>Powered by Gemini</span>
-        </div>
-
-        <div className="sidebar-footer">
-          <span className="online-dot"></span>
-          AI Assistant Online
-        </div>
-      </aside>
-
-      {/* Main Chat */}
-      <main className="chat-area">
-
-        <header className="topbar">
-          <div>
-            <h3>Viro AI</h3>
-            <span>Your personal AI assistant</span>
-          </div>
-          <span className="status">● Online</span>
-        </header>
-
-        <section className="messages-area">
-
+        {/* Scrollable Message Thread */}
+        <section
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="viro-messages-viewport"
+        >
           {messages.length === 0 ? (
-            <div className="welcome-screen">
-              <div className="welcome-icon">✦</div>
-              <h1>Hello, I'm Viro.</h1>
-              <p>
-                Your intelligent AI companion.
-                Ask me anything and let's explore ideas together.
-              </p>
-
-              <div className="suggestions">
-                <button onClick={() => setInput("Explain artificial intelligence simply.")}>
-                  Explain AI
-                </button>
-
-                <button onClick={() => setInput("Give me some project ideas.")}>
-                  Project ideas
-                </button>
-
-                <button onClick={() => setInput("Help me learn Python.")}>
-                  Learn Python
-                </button>
-              </div>
-            </div>
+            <WelcomeScreen
+              onSelectSuggestion={(prompt) => sendMessage(prompt)}
+              isThinking={loading}
+            />
           ) : (
-            <div className="message-list">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message-row ${msg.role}`}
-                >
-                  <div className="message-avatar">
-                    {msg.role === "user" ? "You" : "✦"}
-                  </div>
-
-                  <div className="message-content">
-                    <span className="message-name">
-                      {msg.role === "user" ? "You" : "Viro AI"}
-                    </span>
-                    <div className="message-bubble">
-                      {msg.content}
-                    </div>
-                  </div>
-                </div>
+            <div className="message-thread-container">
+              {messages.map((msg, idx) => (
+                <ChatMessage
+                  key={idx}
+                  message={msg}
+                  isLast={idx === messages.length - 1}
+                  isLoading={loading}
+                  onRegenerate={handleRegenerate}
+                />
               ))}
 
-              {loading && (
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  Viro is thinking...
-                </div>
-              )}
+              {loading && <TypingIndicator />}
 
-              <div ref={bottomRef}></div>
+              <div ref={bottomRef} className="scroll-anchor" />
             </div>
           )}
 
+          {/* Error Banner */}
           {error && (
-            <div className="error-message">
-              {error}
+            <div className="error-banner-anchor">
+              <ErrorBanner
+                error={error}
+                onRetry={lastPrompt ? () => sendMessage(lastPrompt) : null}
+                onDismiss={() => setError("")}
+              />
             </div>
           )}
-
         </section>
 
-        <footer className="input-area">
-          <div className="input-wrapper">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Message Viro AI..."
-              rows="1"
-              disabled={loading}
-            />
+        {/* Scroll To Bottom Floating Pill */}
+        {showScrollBottom && (
+          <button
+            type="button"
+            className="scroll-bottom-pill"
+            onClick={() => scrollToBottom("smooth")}
+            aria-label="Scroll to bottom"
+            title="Scroll to latest message"
+          >
+            <ArrowDownIcon size={14} />
+            <span>New messages below</span>
+          </button>
+        )}
 
-            <button
-              className="send-btn"
-              onClick={sendMessage}
-              disabled={!input.trim() || loading}
-              aria-label="Send message"
-            >
-              ↑
-            </button>
-          </div>
-
-          <p>Viro AI can make mistakes. Verify important information.</p>
+        {/* Futuristic Composer Dock */}
+        <footer className="viro-composer-dock">
+          <Composer
+            input={input}
+            setInput={setInput}
+            onSend={() => sendMessage()}
+            isLoading={loading}
+          />
         </footer>
-
       </main>
     </div>
   );
 }
-
-export default App;

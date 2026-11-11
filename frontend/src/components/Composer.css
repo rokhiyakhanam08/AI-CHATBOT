@@ -1,0 +1,146 @@
+/* Composer Futuristic Theme */
+
+.viro-composer-container {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 10px 24px 20px;
+  position: relative;
+  z-index: 20;
+}
+
+.composer-input-card {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  background: rgba(13, 17, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.composer-input-card:focus-within {
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6), 0 0 28px rgba(34, 211, 238, 0.18), 0 0 14px rgba(139, 92, 246, 0.25);
+  background: rgba(15, 20, 34, 0.95);
+}
+
+.composer-spark-wrap {
+  display: grid;
+  place-items: center;
+  color: #22d3ee;
+  padding-bottom: 3px;
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: all 0.3s ease;
+}
+
+.composer-input-card:focus-within .composer-spark-wrap {
+  opacity: 1;
+  color: #38bdf8;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6));
+}
+
+.composer-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 26px;
+  max-height: 160px;
+  padding: 0;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.composer-textarea::placeholder {
+  color: #64748b;
+  font-size: 14.5px;
+}
+
+.composer-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Action Group */
+.composer-action-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-bottom: 1px;
+}
+
+.composer-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  border: none;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+}
+
+.composer-send-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #a855f7 0%, #22d3ee 100%);
+}
+
+.composer-send-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.composer-send-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.composer-footer-text {
+  text-align: center;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 10px;
+  letter-spacing: -0.01em;
+}
+
+.composer-footer-text strong {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .viro-composer-container {
+    padding: 8px 12px 14px;
+  }
+
+  .composer-input-card {
+    padding: 10px 12px 10px 14px;
+    border-radius: 14px;
+  }
+
+  .composer-spark-wrap {
+    display: none;
+  }
+
+  .composer-footer-text {
+    font-size: 10px;
+  }
+}

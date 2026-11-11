@@ -1,0 +1,305 @@
+/* ViroCore Futuristic Animations & Styling */
+
+.viro-core-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Ambient Volumetric Glow */
+.viro-core-ambient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.45) 0%,
+    rgba(139, 92, 246, 0.35) 45%,
+    rgba(6, 182, 212, 0.12) 70%,
+    transparent 100%
+  );
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: 0;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.size-sm .viro-core-ambient {
+  filter: blur(8px);
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.size-md .viro-core-ambient {
+  filter: blur(14px);
+  width: 100%;
+  height: 100%;
+}
+
+.viro-core-svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.35));
+}
+
+/* 3D Orbital Rings */
+.orbit-group {
+  transform-origin: center;
+}
+
+.ring-1 {
+  animation: viroOrbit1 16s linear infinite;
+}
+
+.ring-2 {
+  animation: viroOrbit2 22s linear infinite reverse;
+}
+
+.ring-3 {
+  animation: viroOrbit3 28s ease-in-out infinite alternate;
+}
+
+@keyframes viroOrbit1 {
+  0% {
+    transform: rotate(25deg);
+  }
+  100% {
+    transform: rotate(385deg);
+  }
+}
+
+@keyframes viroOrbit2 {
+  0% {
+    transform: rotate(-35deg);
+  }
+  100% {
+    transform: rotate(325deg);
+  }
+}
+
+@keyframes viroOrbit3 {
+  0% {
+    transform: rotate(0deg) scale(0.96);
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(180deg) scale(1.04);
+    opacity: 0.4;
+  }
+}
+
+/* Corona & Plasma Body */
+.corona-circle {
+  transform-origin: center;
+  animation: viroCoronaPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes viroCoronaPulse {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+.core-orb-group {
+  transform-origin: center;
+  animation: viroCoreBreathe 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes viroCoreBreathe {
+  0% {
+    transform: scale(0.97);
+    filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 24px rgba(139, 92, 246, 0.65));
+  }
+  100% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 32px rgba(34, 211, 238, 0.7));
+  }
+}
+
+/* Energy Ripples */
+.energy-ripple {
+  transform-origin: center;
+}
+
+.ripple-1 {
+  animation: viroRipple 3s ease-out infinite;
+}
+
+.ripple-2 {
+  animation: viroRipple 3s ease-out infinite 1.5s;
+}
+
+@keyframes viroRipple {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* Inner Spark */
+.inner-spark {
+  animation: viroSpark 2s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+.spark-halo {
+  animation: viroSparkHalo 2.5s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes viroSpark {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes viroSparkHalo {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.85;
+  }
+}
+
+/* STATE: THINKING (Accelerated, electric, pulsing energy) */
+.state-thinking .viro-core-ambient {
+  background: radial-gradient(
+    circle,
+    rgba(6, 182, 212, 0.7) 0%,
+    rgba(168, 85, 247, 0.6) 45%,
+    rgba(56, 189, 248, 0.25) 75%,
+    transparent 100%
+  );
+  filter: blur(34px);
+  transform: translate(-50%, -50%) scale(1.15);
+  animation: ambientThinking 1.2s ease-in-out infinite alternate;
+}
+
+.state-thinking .ring-1 {
+  animation-duration: 4.5s;
+}
+
+.state-thinking .ring-2 {
+  animation-duration: 5.5s;
+}
+
+.state-thinking .ring-3 {
+  animation-duration: 7s;
+}
+
+.state-thinking .core-orb-group {
+  animation: viroThinkingPulse 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+.state-thinking .ripple-1 {
+  animation-duration: 1.4s;
+}
+
+.state-thinking .ripple-2 {
+  animation-duration: 1.4s;
+  animation-delay: 0.7s;
+}
+
+@keyframes viroThinkingPulse {
+  0% {
+    transform: scale(0.94);
+    filter: drop-shadow(0 0 16px rgba(6, 182, 212, 0.8));
+  }
+  100% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 42px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 60px rgba(34, 211, 238, 0.8));
+  }
+}
+
+@keyframes ambientThinking {
+  0% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+}
+
+/* STATE: RESPONDING (Smooth, glowing, radiant harmonics) */
+.state-responding .viro-core-ambient {
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.6) 0%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(6, 182, 212, 0.2) 80%,
+    transparent 100%
+  );
+  filter: blur(32px);
+  animation: ambientResponding 2.4s ease-in-out infinite alternate;
+}
+
+.state-responding .ring-1 {
+  animation-duration: 9s;
+}
+
+.state-responding .ring-2 {
+  animation-duration: 12s;
+}
+
+.state-responding .core-orb-group {
+  animation: viroRespondingFlux 2s ease-in-out infinite alternate;
+}
+
+@keyframes viroRespondingFlux {
+  0% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.7));
+  }
+  100% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 36px rgba(168, 85, 247, 0.85));
+  }
+}
+
+@keyframes ambientResponding {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}

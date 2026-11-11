@@ -1,155 +1,128 @@
 
-# Viro AI 🤖
-### Your Intelligent AI Companion
+# Viro AI ✦
+### Your Intelligent AI Companion — Futuristic Next-Gen UI
 
-Viro AI is a multi-turn conversational AI chatbot powered by Google's Gemini API. It maintains conversation context, supports multiple independent conversations, and provides an interactive React-based chat interface.
+Viro AI is a futuristic, next-generation conversational AI experience powered by Google's Gemini API and an ultra-modern React + Vite interface with FastAPI backend. It features the signature **VIRO CORE** holographic AI sphere, full conversation history, rich markdown & syntax-highlighted code rendering with one-click copy, dynamic regeneration, and multi-turn context memory.
+
+---
 
 ## ✨ Features
 
-- AI-powered conversational responses
-- Multi-turn conversation memory
-- Unique conversation IDs
-- Context window management
-- React and Vite frontend
-- FastAPI backend
-- Gemini API integration
-- API error handling
-- Responsive chat interface
+- **Signature Feature — VIRO CORE**: An interactive, animated holographic 3D AI sphere with gyroscopic orbital rings, multi-stop plasma corona, and real-time state transitions (`idle`, `thinking`, `responding`).
+- **Cinematic Futuristic Aesthetics**: Deep midnight black and navy palette (`#06070b`, `#090c15`), electric violet (`#8b5cf6`), neon cyan (`#22d3ee`), ambient starlight grid, and glassmorphic panels.
+- **Persistent Conversation History**: Multi-session management with sidebar history, auto-saved in `localStorage`, session switching, individual deletion, and clean state resets.
+- **Interactive Markdown & Code Blocks**: High-fidelity formatting with language detection, custom monospace styling (`JetBrains Mono`), and one-click "Copy Code" with instant feedback.
+- **Response Actions**: Single-click "Copy Response" for full messages and "Regenerate Response" to re-synthesize thoughts.
+- **Auto-Resizing Composer**: Modern input dock that expands smoothly with multiline input, supporting `Enter` to send and `Shift+Enter` for newlines.
+- **Contextual Suggestions**: 4 interactive launch cards for Architecture, Quantum Physics, AI Startups, and Neural Memory.
+- **Multi-Turn Neural Memory**: Unique conversation IDs preserve conversational continuity across turns within an active context window.
+- **Intelligent Error Shield**: Clear, helpful feedback for HTTP 429 quota exhaustion and HTTP 503 service updates, with a one-click Retry button.
+- **Responsive Architecture**: Pixel-perfect layout across desktop, laptop, tablet, and mobile with a collapsible drawer sidebar.
+- **Zero API Key Leakage**: Gemini API keys remain strictly server-side in backend environment variables.
+
+---
 
 ## 🛠️ Technology Stack
 
 **Frontend**
-- React.js
-- Vite
-- JavaScript
-- CSS
+- React 19 + Vite 8
+- Marked (Lightweight Markdown AST Parser)
+- Space Grotesk, Inter, and JetBrains Mono Typography
+- Pure GPU-accelerated CSS3 & SVG Holographic Animations
 
 **Backend**
-- Python
-- FastAPI
-- Uvicorn
+- Python 3.13 + FastAPI
+- Uvicorn ASGI Server
+- Google GenAI SDK (`gemini-3.5-flash`)
+- Pydantic v2 + Python-Dotenv
 
-**AI Integration**
-- Google Gemini API
-- Google Gen AI SDK
+---
 
 ## 📁 Project Structure
 
 ```text
 AI CHATBOT/
 ├── backend/
-│   ├── main.py
-│   ├── chatbot.py
-│   ├── test_gemini.py
-│   ├── requirements.txt
-│   ├── .env.example
-│   └── .env
+│   ├── main.py              # FastAPI server, CORS, conversation manager, error handlers
+│   ├── chatbot.py           # Gemini GenAI client & Viro companion system prompt
+│   ├── test_gemini.py       # API connection verification script
+│   ├── requirements.txt     # Python dependencies
+│   ├── .env.example         # Environment template
+│   └── .env                 # API keys (never committed to git)
 ├── frontend/
-│   ├── src/
 │   ├── public/
-│   └── package.json
+│   │   └── favicon.svg      # Holographic Viro Core glowing SVG favicon
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ViroCore.jsx         # Holographic 3D AI sphere & orbital rings
+│   │   │   ├── ViroCore.css         # Breathing, thinking & responding animations
+│   │   │   ├── MarkdownRenderer.jsx # Code block copy, syntax, headers, lists
+│   │   │   ├── MarkdownRenderer.css # Dark futuristic markdown theme
+│   │   │   ├── Sidebar.jsx          # Collapsible history drawer & status
+│   │   │   ├── Sidebar.css          # Glassmorphic sidebar styles
+│   │   │   ├── Topbar.jsx           # Header bar, title, neural link pill
+│   │   │   ├── Topbar.css           # Frosted glass top navigation
+│   │   │   ├── WelcomeScreen.jsx    # Cinematic greeting, suggestions & Viro Core
+│   │   │   ├── WelcomeScreen.css    # Ambient glow and suggestion card grid
+│   │   │   ├── ChatMessage.jsx      # Message bubbles, copy & regenerate
+│   │   │   ├── ChatMessage.css      # User violet glow & assistant glass cards
+│   │   │   ├── TypingIndicator.jsx  # Pulsing wave equalizer & thinking state
+│   │   │   ├── TypingIndicator.css  # Holographic wave styling
+│   │   │   ├── Composer.jsx         # Auto-resizing textarea dock
+│   │   │   ├── Composer.css         # Glowing focus states & send button
+│   │   │   ├── ErrorBanner.jsx      # Futuristic alert with retry action
+│   │   │   ├── ErrorBanner.css      # Rose-tinted glassmorphic alert
+│   │   │   └── Icons.jsx            # Handcrafted crisp SVG icon suite
+│   │   ├── App.jsx          # State, history sync, auto-scroll & API calls
+│   │   ├── App.css          # Celestial grid, ambient nebula, master layout
+│   │   ├── index.css        # Global CSS variables, scrollbars & typography
+│   │   └── main.jsx         # React application root
+│   ├── index.html           # Fonts preconnect & meta configuration
+│   ├── package.json         # NPM scripts and dependencies
+│   └── vite.config.js       # Vite configuration
 ├── .gitignore
 └── README.md
 ```
 
+---
+
 ## ⚙️ Installation and Setup
 
-### 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd AI CHATBOT
-```
-
-### 2. Backend Setup
+### 1. Backend Setup
 
 ```bash
 cd backend
 python -m venv venv
-```
-
-Activate the virtual environment on Windows:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-Install dependencies:
-
-```bash
+.\venv\Scripts\Activate.ps1   # Windows PowerShell
 pip install -r requirements.txt
 ```
 
-### 3. Configure Gemini API Key
-
-Create a `.env` file inside the backend folder.
-
-Add your Gemini API key:
-
+Ensure your `.env` contains:
 ```env
 GEMINI_API_KEY=your_actual_api_key
 ```
 
-Get an API key from:
-
-https://aistudio.google.com/
-
-Never upload your actual `.env` file to GitHub.
-
-### 4. Run the Backend
-
+Run the backend server:
 ```bash
-python -m uvicorn main:app --reload
+python main.py
 ```
+*Backend runs on `http://127.0.0.1:8000` with interactive Swagger docs at `http://127.0.0.1:8000/docs`.*
 
-Backend URL:
+### 2. Frontend Setup
 
-http://127.0.0.1:8000
-
-API documentation:
-
-http://127.0.0.1:8000/docs
-
-### 5. Frontend Setup
-
-Open another terminal:
-
+In a new terminal:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+*Frontend runs on `http://localhost:5173`.*
 
-Frontend URL:
+---
 
-http://localhost:5173
+## ⌨️ Shortcuts & Controls
 
-## 🧠 Conversation Management
-
-Viro AI uses unique conversation IDs to maintain separate chat sessions.
-
-The backend stores conversation history and sends recent messages to Gemini as context.
-
-The current implementation limits stored context to a maximum of 10 messages.
-
-## 🔐 Security
-
-- API keys are stored in environment variables.
-- `.env` is excluded from Git.
-- `.env.example` provides a configuration template.
-- API errors are handled gracefully.
-
-## 🚀 Future Improvements
-
-- Persistent chat history using a database
-- User authentication
-- Multiple conversation management
-- Improved streaming responses
-- Voice interaction
-- Deployment to cloud infrastructure
-
-## 👩‍💻 Developer
-
-Developed as an internship project.
-
-**Project:** Viro AI – Your Intelligent AI Companion
+- **Enter**: Send message
+- **Shift + Enter**: Newline in composer
+- **Ctrl + N / Cmd + N**: Start a new chat exploration
+- **Sidebar Toggle**: Click top-left menu icon to expand or collapse history

@@ -1,0 +1,226 @@
+/* Markdown & Code Block Futuristic Theme */
+
+.markdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.markdown-prose {
+  color: #e2e8f0;
+  font-size: 15px;
+  line-height: 1.75;
+  letter-spacing: -0.01em;
+  word-break: break-word;
+}
+
+.markdown-prose p {
+  margin: 0 0 12px 0;
+}
+
+.markdown-prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Headings */
+.markdown-prose h1,
+.markdown-prose h2,
+.markdown-prose h3,
+.markdown-prose h4 {
+  font-family: "Space Grotesk", sans-serif;
+  color: #f8fafc;
+  font-weight: 600;
+  margin: 18px 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.markdown-prose h1 {
+  font-size: 1.45rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  padding-bottom: 6px;
+}
+
+.markdown-prose h2 {
+  font-size: 1.25rem;
+  color: #38bdf8;
+}
+
+.markdown-prose h3 {
+  font-size: 1.1rem;
+  color: #c084fc;
+}
+
+/* Bold & Emphasis */
+.markdown-prose strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.markdown-prose em {
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+/* Lists */
+.markdown-prose ul,
+.markdown-prose ol {
+  margin: 8px 0 14px 20px;
+  padding: 0;
+}
+
+.markdown-prose li {
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.markdown-prose ul li::marker {
+  color: #22d3ee;
+}
+
+.markdown-prose ol li::marker {
+  color: #a855f7;
+  font-weight: 600;
+}
+
+/* Blockquotes */
+.markdown-prose blockquote {
+  margin: 14px 0;
+  padding: 10px 16px;
+  background: rgba(139, 92, 246, 0.07);
+  border-left: 3px solid #8b5cf6;
+  border-radius: 0 8px 8px 0;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+/* Inline Code */
+.markdown-prose code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.88em;
+  padding: 2px 7px;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: #38bdf8;
+  border-radius: 6px;
+  white-space: pre-wrap;
+}
+
+/* Links */
+.markdown-prose a {
+  color: #38bdf8;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.5);
+  transition: all 0.2s ease;
+}
+
+.markdown-prose a:hover {
+  color: #a855f7;
+  border-bottom-color: #a855f7;
+}
+
+/* Tables */
+.markdown-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+  background: rgba(15, 20, 32, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.markdown-prose th,
+.markdown-prose td {
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+}
+
+.markdown-prose th {
+  background: rgba(139, 92, 246, 0.15);
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Code Block Wrapper */
+.code-block-wrapper {
+  margin: 14px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #080a12;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.code-block-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: lowercase;
+}
+
+.code-icon {
+  color: #38bdf8;
+}
+
+.code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-copy-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #f1f5f9;
+}
+
+.code-copy-btn.copied {
+  background: rgba(34, 211, 238, 0.2);
+  border-color: rgba(34, 211, 238, 0.5);
+  color: #22d3ee;
+}
+
+.code-block-pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  background: #070910;
+}
+
+.code-block-pre code {
+  font-family: inherit;
+  background: none;
+  padding: 0;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+}

@@ -19,7 +19,14 @@ app = FastAPI(
 # Allow React frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+    ],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -136,8 +143,8 @@ def chat(request: ChatRequest):
             raise HTTPException(
                 status_code=429,
                 detail=(
-                    "Viro AI has reached its free usage limit. "
-                    "Please try again after your quota resets."
+                    "Viro AI has reached its usage limit for the moment. "
+                    "Please wait a brief moment while your quota resets, then try again."
                 )
             )
 
@@ -146,6 +153,22 @@ def chat(request: ChatRequest):
             status_code=503,
             detail=(
                 "Viro AI is temporarily unavailable. "
-                "Please try again later."
+                "The neural connection is reconnecting, please try again in a moment."
             )
         )
+
+
+if __name__ == "__main__":
+    import socket
+    import uvicorn
+
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(("127.0.0.1", 8000))
+        sock.listen(5)
+        server = uvicorn.Server(uvicorn.Config(app=app, log_level="info"))
+        server.run(sockets=[sock])
+    except Exception:
+        uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
